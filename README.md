@@ -1,29 +1,58 @@
-## Executive Summary
+# Dashboard
+https://public.tableau.com/views/PropertyValueandTravelPatterns/Dashboard2?:language=en-US&publish=yes&:display_count=n&:origin=viz_share_link
 
-Combine multiple datasets for NYC taxicab data to show emerging trends in the pricing and frequency of trips over an 11-year period. Overlay, and juxtapose with housing prices from Zillow to determine if riders travel within similar wealth districts. Build time filterable dynamic maps and pricing charts. I am interested to see if Taxi prices have risen or fallen in the app era, and if ridership has been affected disproportionately in different wealth areas.
+# Summary
+----
 
-## Motivation
+Combining multiple datasets for NYC taxicab data to highlight trends in the frequency of trips over a multi-year period. Intent to juxtapose with housing prices, to determine if ride volume and frequency correlates with property values. Develop a time filterable dynamic dashboard. An exploration to see if Taxi volume has risen or fallen in the app era, and if ridership has been affected disproportionately in different property value areas.
 
-I wanted to find data that can be addressed geospatially, monetarily and has data for at least a decade. I would like to see the way these variables interact, and find good ways to interact with this data visually Data Question Have NYC Taxi-cab prices/pickup frequency increased, or decreased in the past decade? Does the property value of an area influence its ridership, rates and frequency of travel?
+## Data Questions
+----
 
-## Minimum Viable Product (MVP)
+ - Does property value influence travel patterns?
 
-A Tableau/Power BI dashboard that displays a map of NYC, with taxi-cab paths, monetary trends, and pick-up trends over the 11 year period.
+ - Did rideshare services offset these patterns?
 
-## Schedule (through <date of demo day>)
+ - What areas continued service the longest, following Covid-19 restrictions?
 
-1. Get the Data (8/1/2021)
-2. Clean & Explore the Data (7/18/2021)
-3. Create Presentation of your Analysis (8/10/2021) - Should be a presentation, but could include a Jupyter Notebook or dashboard in Excel, Tableau, or PowerBI
-4. Internal demos (8/20/2021)
-5. Demo Day!! (8/20/2021)
+## Data Challenges
+----
+#### Large Files
+----
+All files necessary to move forward answering my data questions totaled 263 GB. This is not an easily accessible amount of data to access inside a tableau dashboard. Nor is this an easy amount of data to process, as a single month of NYC Taxi data averaged 14 million rows, and I intend to use Lat/Long coordinates to group my data. Geospatial joins are easy enough to perform, however a single sheet loaded and processed would use 24 GB of system memory to address the full dataframe directly.
+
+I attempted multiple coding solutions to process these flat-files to a more easily addressable size, with varying success.
+
+Per month, using numpy matching with mathematical spatial formulas would take on average 3.8 hours, and geojoins would take on average 1.2 hours. My system was only utilizing 17% of my processing power, which lead to explorations into parallel processing within python. Unfortunately, python does not natively support parallel processing inside a windows environment. I researched virtual environments such as Docker, to load my code in a unix environment, and process the sheets, but this would not resolve memory usage issues, nor did I feel confident becoming adept at this technology in my given timeframe. Following, I attempted to utilize the Dask library, which does allow for parallel processing inside of Jupyter Notebooks on a windows machine, and in conjunction I was able to process and save a sheet to Parquet files only utilizing 24% of my system memory, and 80% of my CPU.
+
+The results were less than impressive, however. Theoretically using this method should allow me to process 40 million rows per hour, though 28 million rows was taking my system 1.8 hours. It was extremely interesting to quickly implement these technologies quickly, and have them function with expected output, though their efficacy was a non-starter moving forward.
+
+#### Spatial Files
+----
+
+NYC taxi data prior to 2016 has a high specificity geospatially. Following June 2016, this granularity is revised to be published within taxi zones, as opposed to Lat/Long coordinates, as to provide anonymity for taxi drivers. This consideration for the ethical publication of data is important, however presents a problem for the data questions.
+
+NYC has:
+
+ - 248 defined polygons in their published Zip Code shape file.
+
+ - 263 defined polygons in their published Taxi Zones shape file.
+
+Aside from the 15 duplicate matches we would expect, there are also many Zip Codes that fall in a single Taxi Zone. Converting these zones to centroids, and matching them using the Haversine formula, we find 183 distinct matches for Zip Codes within the Taxi Zones. This unified shape file will be used to join the Taxi and Property value data.
+
+## Conclusions
+----
+
+ - There is a meaningful correlation between property value and volume of Taxi usage in Manhattan.
+
+ - Rideshare services such as Uber and Lyft did indeed offset these correlations in later years.
+
+ - Manhattan continued its usage of Taxi's the longest leading into Covid-19 lockdowns.
+
+ - Staten Island, which has a higher property value on average, utilized private limo's and low volume ride share significantly more than any other borough during the time leading up to lockdowns.
 
 ## Data Sources
+----
 
 https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page
-https://www.zillow.com/research/data/
-
-
-## Known Issues and Challenges
-
-determining a valuable metric to determine wealth areas in New York -developing a map that can display taxi pathing, and display taxi trips/frequency as a story in a time defined metric.
+https://www1.nyc.gov/site/finance/taxes/property-rolling-sales-data.page
