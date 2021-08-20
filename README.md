@@ -43,9 +43,9 @@ Aside from the 15 duplicate matches we would expect, there are also many Zip Cod
 ## Conclusions
 ----
 
- - There is a meaningful correlation between property value and volume of Taxi usage in Manhattan.
+ - There is a meaningful correlation between property value and volume of Taxi usage in only Manhattan, but not overall.
 
- - Rideshare services such as Uber and Lyft did indeed offset these correlations in later years.
+ - Rideshare services replaced the correlations in Manhattan following 2018.
 
  - Manhattan continued its usage of Taxi's the longest leading into Covid-19 lockdowns.
 
